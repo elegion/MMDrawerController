@@ -54,6 +54,10 @@
                         initWithCenterViewController:navigationController
                         leftDrawerViewController:leftSideNavController
                         rightDrawerViewController:rightSideNavController];
+    self.drawerController.shouldDimCenterViewController = YES;
+    self.drawerController.dimmingColor = [UIColor blackColor];
+    self.drawerController.maximumDimmingViewAlpha = 0.4;
+    
     [self.drawerController setShowsShadow:NO];
     [self.drawerController setRestorationIdentifier:@"MMDrawer"];
     [self.drawerController setMaximumRightDrawerWidth:200.0];

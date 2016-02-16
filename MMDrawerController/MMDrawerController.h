@@ -256,6 +256,10 @@ typedef void (^MMDrawerControllerDrawerVisualStateBlock)(MMDrawerController * dr
  */
 @property (nonatomic, assign) CGFloat panVelocityXAnimationThreshold;
 
+@property (nonatomic, assign) BOOL shouldDimCenterViewController;
+@property (nonatomic, strong) UIColor *dimmingColor;
+@property (nonatomic, assign) CGFloat maximumDimmingViewAlpha;
+
 ///---------------------------------------
 /// @name Initializing a `MMDrawerController`
 ///---------------------------------------

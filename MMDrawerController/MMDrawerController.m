@@ -138,6 +138,8 @@ static NSString *MMDrawerOpenSideKey = @"MMDrawerOpenSide";
 @property (nonatomic, copy) MMDrawerGestureCompletionBlock gestureCompletion;
 @property (nonatomic, assign, getter = isAnimatingDrawer) BOOL animatingDrawer;
 
+@property (nonatomic, strong) UIView *dimmingView;
+
 @end
 
 @implementation MMDrawerController
@@ -203,6 +205,11 @@ static NSString *MMDrawerOpenSideKey = @"MMDrawerOpenSide";
     
     // set defualt panVelocityXAnimationThreshold
     [self setPanVelocityXAnimationThreshold:MMDrawerPanVelocityXAnimationThreshold];
+    
+    self.dimmingView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.dimmingView.backgroundColor = self.dimmingColor;
+    self.dimmingView.alpha = 0;
+    self.dimmingView.userInteractionEnabled = NO;
 }
 
 #pragma mark - State Restoration
@@ -436,6 +443,12 @@ static NSString *MMDrawerOpenSideKey = @"MMDrawerOpenSide";
     [self.childControllerContainerView bringSubviewToFront:self.centerContainerView];
     [self.centerViewController.view setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
     [self updateShadowForCenterView];
+    
+    if (self.shouldDimCenterViewController) {
+        [self.dimmingView removeFromSuperview];
+        [self.centerContainerView addSubview:self.dimmingView];
+        self.dimmingView.frame = self.centerContainerView.bounds;
+    }
     
     if(animated == NO){
         // If drawer is offscreen, then viewWillAppear: will take care of this
@@ -962,6 +975,22 @@ static NSString *MMDrawerOpenSideKey = @"MMDrawerOpenSide";
     [self.dummyStatusBarView setBackgroundColor:_statusBarViewBackgroundColor];
 }
 
+- (void)setDimmingColor:(UIColor *)dimmingColor {
+    _dimmingColor = dimmingColor;
+    
+    self.dimmingView.backgroundColor = dimmingColor;
+}
+
+- (void)setShouldDimCenterViewController:(BOOL)shouldDimCenterViewController {
+    _shouldDimCenterViewController = shouldDimCenterViewController;
+    
+    if (shouldDimCenterViewController) {
+        [self.dimmingView removeFromSuperview];
+        [self.centerContainerView addSubview:self.dimmingView];
+        [self.dimmingView setFrame:self.centerContainerView.bounds];
+    }
+}
+
 -(void)setAnimatingDrawer:(BOOL)animatingDrawer{
     _animatingDrawer = animatingDrawer;
     [self.view setUserInteractionEnabled:!animatingDrawer];
@@ -1191,6 +1220,9 @@ static NSString *MMDrawerOpenSideKey = @"MMDrawerOpenSide";
 }
 
 -(void)updateDrawerVisualStateForDrawerSide:(MMDrawerSide)drawerSide percentVisible:(CGFloat)percentVisible{
+    if (self.shouldDimCenterViewController) {
+        self.dimmingView.alpha = self.maximumDimmingViewAlpha * percentVisible;
+    }
     if(self.drawerVisualState){
         self.drawerVisualState(self,drawerSide,percentVisible);
     }
