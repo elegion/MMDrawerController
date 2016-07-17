@@ -26,6 +26,8 @@
 
 @interface MMDrawerBarButtonItem : UIBarButtonItem
 
++(UIImage*)drawerButtonItemImage;
+
 ///---------------------------------------
 /// @name Initializing a `MMDrawerBarButtonItem`
 ///---------------------------------------
